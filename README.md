@@ -5,7 +5,7 @@ A new Flutter project.
 ## Getting Started
 
 
-1、flutter build apk --obfuscate  --split-debug-info=v1.0.3/
+1、flutter build apk --obfuscate  --split-debug-info=v-1/   or flutter build ios --obfuscate  --split-debug-info=v-2/
 
 2、 flutter packages pub run sentry_dart_plugin
 

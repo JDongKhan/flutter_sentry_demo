@@ -12,18 +12,10 @@ final dio = Dio();
 final log = Logger('MyAwesomeLogger');
 
 void main() async {
-  FlutterError.onError = (FlutterErrorDetails details) async {
-    Zone.current.handleUncaughtError(details.exception, details.stack!);
-  };
-  WidgetsFlutterBinding.ensureInitialized();
-  PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  String version = packageInfo.version;
-  String buildNumber = packageInfo.buildNumber;
-  String packageName = packageInfo.packageName;
-  await Sentry.init(
+  await SentryFlutter.init(
         (options) {
       options.dsn = 'https://c8cae4a6f8f442b0ebcf92d655fbf244@o4507236624695296.ingest.us.sentry.io/4507236626530304';
-      options.release = '$packageName@$version+$buildNumber';
+      //options.release = '$packageName@$version+$buildNumber';
       options.enablePrintBreadcrumbs = false;
       options.tracesSampleRate = 1;
       options.tracesSampler = (samplingContext) {
@@ -31,9 +23,17 @@ void main() async {
       };
       options.addIntegration(LoggingIntegration());
     },
-    appRunner: initDio,
+    appRunner:() async {
+      initApp();
+    },
   );
+}
 
+void _initDio() {
+  dio.addSentry();
+}
+
+void initApp() {
   final character = {
     'name': 'Mighty Fighter',
     'age': 19,
@@ -43,15 +43,7 @@ void main() async {
   Sentry.configureScope(
         (scope) => scope.setUser(SentryUser(id: '1234', email: 'jane.doe@example.com')),
   );
-  // Init your App.
-  initApp();
-}
-
-void initDio() {
-  dio.addSentry();
-}
-
-void initApp() {
+  _initDio();
   final transaction = Sentry.startTransaction("start", "collection");
   transaction.setMeasurement("second", 2);
   runApp(const MyApp());
