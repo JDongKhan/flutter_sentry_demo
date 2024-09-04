@@ -152,8 +152,8 @@ class _MyHomePageState extends State<MyHomePage> {
     //   await span.finish();
     // }
     // await transaction.finish();
-    // throw Exception("name can not null");
     methodChannel.invokeMethod("test");
+    throw Exception("name can not null");
   }
 
   @override
