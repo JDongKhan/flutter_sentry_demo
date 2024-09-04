@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -116,6 +117,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  MethodChannel methodChannel = const MethodChannel("crash_test");
+
   void _incrementCounter() async {
     log.info('start!');
     setState(() {
@@ -126,30 +129,31 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
-    final transaction = Sentry.startTransaction(
-      'dio-web-request',
-      'request',
-      bindToScope: true,
-    );
-    final span = transaction.startChild(
-      'dio',
-      description: 'desc',
-    );
-    await Sentry.captureMessage('Something went wrong');
-    log.info('end!');
-    Response<String>? response;
-    try {
-      response = await dio.get<String>('https://baidu.com');
-      span.status = const SpanStatus.ok();
-    } catch (exception, stackTrace) {
-      span.throwable = exception;
-      span.status = const SpanStatus.internalError();
-      await Sentry.captureException(exception, stackTrace: stackTrace);
-    } finally {
-      await span.finish();
-    }
-    await transaction.finish();
-    throw Exception("name can not null");
+    // final transaction = Sentry.startTransaction(
+    //   'dio-web-request',
+    //   'request',
+    //   bindToScope: true,
+    // );
+    // final span = transaction.startChild(
+    //   'dio',
+    //   description: 'desc',
+    // );
+    // await Sentry.captureMessage('Something went wrong');
+    // log.info('end!');
+    // Response<String>? response;
+    // try {
+    //   response = await dio.get<String>('https://baidu.com');
+    //   span.status = const SpanStatus.ok();
+    // } catch (exception, stackTrace) {
+    //   span.throwable = exception;
+    //   span.status = const SpanStatus.internalError();
+    //   await Sentry.captureException(exception, stackTrace: stackTrace);
+    // } finally {
+    //   await span.finish();
+    // }
+    // await transaction.finish();
+    // throw Exception("name can not null");
+    methodChannel.invokeMethod("test");
   }
 
   @override
